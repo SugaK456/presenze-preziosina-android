@@ -13,9 +13,8 @@ Actions → ultima esecuzione → Artifacts → `presenze-preziosina-apk`.
 Si può anche avviare a mano: Actions → "Compila APK" → Run workflow.
 
 ## Distribuzione
-Caricare `presenze-preziosina.apk` nella cartella della web app e pubblicarlo con
-`firebase deploy --only hosting --project presenze-preziosina`: il link di download sarà
-https://presenze-preziosina.web.app/presenze-preziosina.apk
+Ogni compilazione pubblica una Release con l'APK. Link fisso, sempre all'ultima versione:
+https://github.com/SugaK456/presenze-preziosina-android/releases/latest/download/presenze-preziosina.apk
 
 ## Firma
 La chiave di firma NON è nel repository. È salvata nei secret del repository (Settings → Secrets and variables → Actions):

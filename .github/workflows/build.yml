@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write   # per pubblicare l'APK nelle Release
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -37,3 +40,13 @@ jobs:
         with:
           name: presenze-preziosina-apk
           path: presenze-preziosina.apk
+      - name: Pubblica la Release (link pubblico sempre aggiornato)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Presenze Preziosina 1.0.${{ github.run_number }}
+          body: |
+            Scarica **presenze-preziosina.apk** e aprilo sul telefono Android per installarlo (o aggiornarlo).
+            Link sempre all'ultima versione: https://github.com/${{ github.repository }}/releases/latest/download/presenze-preziosina.apk
+          files: presenze-preziosina.apk
+          make_latest: true
