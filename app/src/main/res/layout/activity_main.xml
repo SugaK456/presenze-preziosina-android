@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/sfondo"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Presenze Preziosina"
+            android:textColor="@color/scuro"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/t_collegamento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:layout_marginTop="18dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/b_esco"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_esco_off"
+                android:text="ESCO"
+                android:textColor="#FFFFFF"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/b_rientro"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_rientro_off"
+                android:text="RIENTRO"
+                android:textColor="#FFFFFF"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/t_stato"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:textColor="@color/grigio"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/b_widget"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="➕ Aggiungi il widget alla Home" />
+
+        <LinearLayout
+            android:id="@+id/sezione_collega"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="4dp"
+                android:text="Per collegare l'app:\n1. Apri la web app delle presenze e accedi.\n2. Premi «📲 Pulsante sul telefono» → «Crea il mio pulsante».\n3. Premi «Collega l'app Android»: l'app si apre già collegata.\n\nIn alternativa copia il link di collegamento e premi «Incolla e collega»."
+                android:textColor="@color/scuro"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/b_web"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Apri la web app" />
+
+            <Button
+                android:id="@+id/b_incolla"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Incolla e collega" />
+
+            <EditText
+                android:id="@+id/campo_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="preziosina://collega?…"
+                android:inputType="textUri"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/b_collega"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Collega" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:lineSpacingExtra="3dp"
+            android:text="Serve solo per le emergenze: dice ai soccorsi chi potrebbe essere ancora nella residenza. L'app invia esclusivamente DENTRO/FUORI; nessuna posizione, nessuno storico. Senza rete l'invio parte appena torna il segnale."
+            android:textColor="@color/grigio"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/b_scollega"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Scollega" />
+    </LinearLayout>
+</ScrollView>

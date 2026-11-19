@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Presenze</string>
+    <string name="widget_nome">Presenze Preziosina</string>
+    <string name="widget_desc">Pulsanti ESCO e RIENTRO per la residenza</string>
+    <string name="url_web">https://presenze-preziosina.web.app/</string>
+</resources>

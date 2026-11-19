@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="verde">#15803D</color>
+    <color name="rosso">#B91C1C</color>
+    <color name="scuro">#0F172A</color>
+    <color name="grigio">#64748B</color>
+    <color name="sfondo">#F1F5F9</color>
+</resources>
