@@ -13,7 +13,7 @@ import java.util.Calendar
 
 /**
  * Promemoria agli orari stabiliti: notifica "Sei ancora DENTRO/FUORI?"
- * e, per un'ora, l'omina sul widget chiede di controllare lo stato.
+ * e, per un'ora, la tessera sul widget diventa gialla e chiede di controllare lo stato.
  */
 object Promemoria {
     /** Orari (ora, minuti). Per cambiarli basta modificare questa lista. */
@@ -73,7 +73,7 @@ object Promemoria {
         c.getSystemService(AlarmManager::class.java)?.cancel(intento(c, AZ_SCATTA, 100))
     }
 
-    /** Arriva l'orario: notifica + omina "attenta" per un'ora. */
+    /** Arriva l'orario: notifica + tessera gialla per un'ora. */
     fun scatta(c: Context) {
         programma(c)   // prima di tutto il prossimo
         if (!attivi(c) || !Prefs.collegato(c)) return
@@ -133,7 +133,7 @@ object Promemoria {
         }
         try {
             c.getSystemService(NotificationManager::class.java)?.notify(NOTIFICA_ID, b.build())
-        } catch (_: SecurityException) { /* notifiche non consentite: resta comunque l'omina sul widget */ }
+        } catch (_: SecurityException) { /* notifiche non consentite: resta comunque la tessera gialla sul widget */ }
     }
 }
 

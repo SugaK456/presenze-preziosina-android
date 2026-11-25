@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-/** Widget: l'omina appesa + fumetto + pulsanti ESCO / RIENTRO. */
+/** Widget: la tessera-mascotte appesa + fumetto + pulsanti ESCO / RIENTRO. */
 class PresenzeWidget : AppWidgetProvider() {
 
     override fun onUpdate(c: Context, m: AppWidgetManager, ids: IntArray) {
@@ -94,13 +94,22 @@ class PresenzeWidget : AppWidgetProvider() {
             }
         }
 
+        /** Tessera-mascotte: verde DENTRO, rossa FUORI, gialla nell'ora del promemoria, grigia se non collegata */
+        fun immagine(c: Context): Int = when {
+            !Prefs.collegato(c) -> R.drawable.tessera_neutra
+            Promemoria.inCorso(c) || Prefs.esito(c) == "codice" -> R.drawable.tessera_attenta
+            Prefs.stato(c) == "fuori" -> R.drawable.tessera_fuori
+            Prefs.stato(c) == "dentro" -> R.drawable.tessera_dentro
+            else -> R.drawable.tessera_neutra
+        }
+
         fun vista(c: Context): RemoteViews {
             val v = RemoteViews(c.packageName, R.layout.widget_presenze)
             val collegato = Prefs.collegato(c)
             val stato = Prefs.stato(c)
             val f = fumetto(c)
 
-            v.setImageViewResource(R.id.w_omina, if (f.allerta) R.drawable.omina_attenta else R.drawable.omina_felice)
+            v.setImageViewResource(R.id.w_omina, immagine(c))
             v.setInt(R.id.w_fumetto, "setBackgroundResource", if (f.allerta) R.drawable.fumetto_allerta else R.drawable.fumetto)
             v.setTextViewText(R.id.w_titolo, f.titolo)
             v.setTextViewText(R.id.w_sotto, f.sotto)

@@ -62,7 +62,7 @@ object Azioni {
         val ctx = c.applicationContext
         val codice = Prefs.codice(ctx) ?: return
         val progetto = Prefs.progetto(ctx) ?: return
-        Promemoria.chiudi(ctx)   // premere un pulsante = stato controllato: l'omina torna serena
+        Promemoria.chiudi(ctx)   // premere un pulsante = stato controllato: la tessera torna del suo colore
         Prefs.setUltimo(ctx, stato, "invio")
         PresenzeWidget.aggiornaTutti(ctx)
         try {

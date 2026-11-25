@@ -232,8 +232,8 @@ class MainActivity : Activity() {
         }
         tStato.text = if (collegato) PresenzeWidget.testoStato(this) else "Collega l'app per iniziare"
 
-        // omina e fumetto
-        iOmina.setImageResource(if (allerta) R.drawable.omina_attenta else R.drawable.omina_felice)
+        // tessera-mascotte e fumetto
+        iOmina.setImageResource(PresenzeWidget.immagine(this))
         tFumetto.visibility = if (allerta) View.VISIBLE else View.GONE
 
         // pulsanti
