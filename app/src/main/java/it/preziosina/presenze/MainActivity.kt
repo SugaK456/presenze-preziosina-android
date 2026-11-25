@@ -10,26 +10,29 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.WindowInsetsController
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 
+/** Schermata principale: stesso stile della web app (barra scura, interruttore grande, card bianche). */
 class MainActivity : Activity() {
 
-    private lateinit var tChip: TextView
+    private lateinit var sw: View
     private lateinit var tGrande: TextView
+    private lateinit var tSub: TextView
     private lateinit var tStato: TextView
-    private lateinit var tFumetto: TextView
-    private lateinit var iOmina: ImageView
-    private lateinit var bEsco: TextView
-    private lateinit var bRientro: TextView
+    private lateinit var iTessera: ImageView
+    private lateinit var banner: View
+    private lateinit var tBanner: TextView
+    private lateinit var vOnline: View
     private lateinit var sezioneCollega: View
     private lateinit var sezionePromemoria: View
     private lateinit var sezioneWidget: View
@@ -44,15 +47,17 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        barreChiare()
+        @Suppress("DEPRECATION")
+        window.statusBarColor = getColor(R.color.scuro)
 
-        tChip = findViewById(R.id.t_chip)
+        sw = findViewById(R.id.sw)
         tGrande = findViewById(R.id.t_grande)
+        tSub = findViewById(R.id.t_sub)
         tStato = findViewById(R.id.t_stato)
-        tFumetto = findViewById(R.id.t_fumetto)
-        iOmina = findViewById(R.id.i_omina)
-        bEsco = findViewById(R.id.b_esco)
-        bRientro = findViewById(R.id.b_rientro)
+        iTessera = findViewById(R.id.i_omina)
+        banner = findViewById(R.id.banner)
+        tBanner = findViewById(R.id.t_banner)
+        vOnline = findViewById(R.id.v_online)
         sezioneCollega = findViewById(R.id.sezione_collega)
         sezionePromemoria = findViewById(R.id.sezione_promemoria)
         sezioneWidget = findViewById(R.id.sezione_widget)
@@ -62,8 +67,15 @@ class MainActivity : Activity() {
         bPermesso = findViewById(R.id.b_permesso)
         bScollega = findViewById(R.id.b_scollega)
 
-        bEsco.setOnClickListener { premi("fuori") }
-        bRientro.setOnClickListener { premi("dentro") }
+        // come nella web app: tocca l'interruttore per passare DENTRO <-> FUORI
+        sw.setOnClickListener {
+            if (!Prefs.collegato(this)) {
+                findViewById<View>(R.id.sezione_collega).requestFocus()
+                Toast.makeText(this, "Prima collega l'app al tuo profilo", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            premi(if (Prefs.stato(this) == "fuori") "dentro" else "fuori")
+        }
         findViewById<View>(R.id.b_widget).setOnClickListener { aggiungiWidget() }
         findViewById<View>(R.id.b_incolla).setOnClickListener { incolla() }
         findViewById<View>(R.id.b_collega).setOnClickListener { collega(campoLink.text.toString()) }
@@ -149,7 +161,7 @@ class MainActivity : Activity() {
         PresenzeWidget.aggiornaTutti(this)
         Promemoria.programma(this)
         campoLink.setText("")
-        Toast.makeText(this, "App collegata ✓ Ora aggiungi il widget alla Home", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "App collegata. Ora aggiungi il widget alla Home.", Toast.LENGTH_LONG).show()
         aggiornaUi()
         chiediPermessoNotifiche(forza = false)
     }
@@ -157,10 +169,6 @@ class MainActivity : Activity() {
     // ---------------- azioni ----------------
 
     private fun premi(stato: String) {
-        if (!Prefs.collegato(this)) {
-            Toast.makeText(this, "Prima collega l'app", Toast.LENGTH_SHORT).show()
-            return
-        }
         Thread { Azioni.inviaOraOInCoda(applicationContext, stato) }.start()
     }
 
@@ -189,58 +197,60 @@ class MainActivity : Activity() {
                 Prefs.sp(this).edit().putBoolean("notifiche_chieste", true).apply()
                 requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 7)
             }
-            forza -> {
-                // permesso già negato in modo definitivo (o notifiche spente): apro le impostazioni dell'app
-                startActivity(Intent("android.settings.APP_NOTIFICATION_SETTINGS")
-                    .putExtra("android.provider.extra.APP_PACKAGE", packageName))
-            }
+            forza -> startActivity(Intent("android.settings.APP_NOTIFICATION_SETTINGS")
+                .putExtra("android.provider.extra.APP_PACKAGE", packageName))
         }
+    }
+
+    private fun online(): Boolean {
+        val cm = getSystemService(ConnectivityManager::class.java) ?: return true
+        val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return false
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     // ---------------- interfaccia ----------------
 
-    private fun barreChiare() {
-        if (Build.VERSION.SDK_INT >= 30) {
-            window.insetsController?.setSystemBarsAppearance(
-                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS,
-                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
-            )
-        } else {
-            @Suppress("DEPRECATION")
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        }
-        @Suppress("DEPRECATION")
-        window.statusBarColor = getColor(R.color.sfondo)
-    }
-
     private fun aggiornaUi() {
         val collegato = Prefs.collegato(this)
         val stato = Prefs.stato(this)
-        val allerta = collegato && Promemoria.inCorso(this)
+        val fuori = stato == "fuori"
 
-        // chip
-        tChip.text = if (collegato) "✓ Collegata" else "Non collegata"
-        tChip.setBackgroundResource(if (collegato) R.drawable.chip_ok else R.drawable.chip_ko)
-        tChip.setTextColor(getColor(if (collegato) R.color.verde else R.color.rosso))
-
-        // stato grande
+        // interruttore
         when {
-            !collegato -> { tGrande.text = "Ciao! 👋"; tGrande.setTextColor(getColor(R.color.scuro)) }
-            stato == "fuori" -> { tGrande.text = "Sei FUORI"; tGrande.setTextColor(getColor(R.color.rosso)) }
-            stato == "dentro" -> { tGrande.text = "Sei DENTRO"; tGrande.setTextColor(getColor(R.color.verde)) }
-            else -> { tGrande.text = "Dove sei?"; tGrande.setTextColor(getColor(R.color.scuro)) }
+            !collegato -> {
+                sw.setBackgroundResource(R.drawable.switch_neutro)
+                tGrande.text = "CIAO"
+                tSub.text = "Collega l'app per iniziare"
+            }
+            fuori -> {
+                sw.setBackgroundResource(R.drawable.switch_fuori)
+                tGrande.text = "FUORI"
+                tSub.text = "Tocca quando rientri"
+            }
+            else -> {
+                sw.setBackgroundResource(R.drawable.switch_dentro)
+                tGrande.text = "DENTRO"
+                tSub.text = "Tocca quando esci"
+            }
         }
-        tStato.text = if (collegato) PresenzeWidget.testoStato(this) else "Collega l'app per iniziare"
+        iTessera.setImageResource(PresenzeWidget.immagine(this))
 
-        // tessera-mascotte e fumetto
-        iOmina.setImageResource(PresenzeWidget.immagine(this))
-        tFumetto.visibility = if (allerta) View.VISIBLE else View.GONE
+        // riga di stato
+        tStato.text = when {
+            !collegato -> "App non collegata"
+            stato == null -> "Nessuno stato inviato da questo telefono"
+            else -> {
+                val t = PresenzeWidget.testoStato(this)
+                if (t.startsWith("registrato")) "Aggiornato: ${t.removePrefix("registrato ")}" else t
+            }
+        }
 
-        // pulsanti
-        bEsco.setBackgroundResource(if (stato == "fuori") R.drawable.btn_esco_on else R.drawable.btn_esco_off)
-        bRientro.setBackgroundResource(if (stato == "dentro") R.drawable.btn_rientro_on else R.drawable.btn_rientro_off)
-        bEsco.alpha = if (collegato) 1f else 0.5f
-        bRientro.alpha = if (collegato) 1f else 0.5f
+        // avviso promemoria
+        val allerta = collegato && Promemoria.inCorso(this)
+        banner.visibility = if (allerta) View.VISIBLE else View.GONE
+        tBanner.text = if (stato == null) "Segna se sei dentro o fuori." else "Ora risulti ${if (fuori) "FUORI" else "DENTRO"}: se non è così, tocca l'interruttore."
+
+        vOnline.alpha = if (online()) 1f else 0.3f
 
         // sezioni
         sezioneCollega.visibility = if (collegato) View.GONE else View.VISIBLE
@@ -252,7 +262,7 @@ class MainActivity : Activity() {
         val attivi = Promemoria.attivi(this)
         if (sPromemoria.isChecked != attivi) sPromemoria.isChecked = attivi
         tOrari.text = if (attivi)
-            "Ti chiedo se sei ancora dentro o fuori alle\n${Promemoria.orariTesto()}"
+            "Ti chiedo se sei ancora dentro o fuori alle ${Promemoria.orariTesto().replace("  ·  ", ", ")}."
         else
             "Promemoria spenti."
         bPermesso.visibility = if (attivi && !notificheConsentite()) View.VISIBLE else View.GONE

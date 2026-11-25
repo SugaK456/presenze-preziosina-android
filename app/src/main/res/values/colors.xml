@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="verde">#16A34A</color>
+    <!-- stessa palette della web app -->
+    <color name="verde">#15803D</color>
     <color name="verde_chiaro">#DCFCE7</color>
-    <color name="rosso">#E11D48</color>
-    <color name="rosso_chiaro">#FFE4E6</color>
-    <color name="scuro">#1E1B3A</color>
-    <color name="grigio">#6B6889</color>
-    <color name="sfondo">#F7F4FF</color>
+    <color name="rosso">#B91C1C</color>
+    <color name="rosso_chiaro">#FEE2E2</color>
+    <color name="giallo">#92400E</color>
+    <color name="giallo_chiaro">#FEF3C7</color>
+    <color name="scuro">#0F172A</color>
+    <color name="testo">#0F172A</color>
+    <color name="grigio">#64748B</color>
+    <color name="grigio_testo">#475569</color>
+    <color name="bordo">#E2E8F0</color>
+    <color name="sfondo">#F1F5F9</color>
     <color name="card">#FFFFFF</color>
-    <color name="rosa">#FF7F96</color>
-    <color name="giallo">#FFD166</color>
-    <color name="giallo_chiaro">#FFF4D6</color>
-    <color name="lilla">#EDE9FE</color>
+    <color name="rosa">#E11D48</color>
 </resources>

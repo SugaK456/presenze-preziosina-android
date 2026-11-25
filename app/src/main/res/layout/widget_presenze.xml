@@ -36,7 +36,7 @@
                 android:fontFamily="sans-serif-medium"
                 android:maxLines="2"
                 android:text="Ciao! Collegami all'app"
-                android:textColor="#1E1B3A"
+                android:textColor="#0F172A"
                 android:textSize="13sp" />
 
             <TextView
@@ -46,7 +46,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="Tocca qui per aprirla"
-                android:textColor="#6B6889"
+                android:textColor="#64748B"
                 android:textSize="11sp" />
         </LinearLayout>
 
