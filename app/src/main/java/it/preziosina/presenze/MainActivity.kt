@@ -241,7 +241,7 @@ class MainActivity : Activity() {
             stato == null -> "Nessuno stato inviato da questo telefono"
             else -> {
                 val t = PresenzeWidget.testoStato(this)
-                if (t.startsWith("registrato")) "Aggiornato: ${t.removePrefix("registrato ")}" else t
+                if (t.startsWith("registrato")) "Aggiornato ${t.removePrefix("registrato ")}" else t
             }
         }
 
