@@ -30,6 +30,7 @@ class MainActivity : Activity() {
     private lateinit var tSub: TextView
     private lateinit var tStato: TextView
     private lateinit var iTessera: ImageView
+    private lateinit var tStanza: TextView
     private lateinit var banner: View
     private lateinit var tBanner: TextView
     private lateinit var vOnline: View
@@ -55,6 +56,7 @@ class MainActivity : Activity() {
         tSub = findViewById(R.id.t_sub)
         tStato = findViewById(R.id.t_stato)
         iTessera = findViewById(R.id.i_omina)
+        tStanza = findViewById(R.id.t_stanza)
         banner = findViewById(R.id.banner)
         tBanner = findViewById(R.id.t_banner)
         vOnline = findViewById(R.id.v_online)
@@ -234,6 +236,7 @@ class MainActivity : Activity() {
             }
         }
         iTessera.setImageResource(PresenzeWidget.immagine(this))
+        tStanza.text = if (collegato) PresenzeWidget.stanzaTesto(this) else "?"
 
         // riga di stato
         tStato.text = when {
@@ -244,6 +247,9 @@ class MainActivity : Activity() {
                 if (t.startsWith("registrato")) "Aggiornato ${t.removePrefix("registrato ")}" else t
             }
         }
+
+        if (collegato && Prefs.stanza(this) == null)
+            tStato.text = "${tStato.text}\nPer vedere il numero della stanza ricollega l'app dalla web app."
 
         // avviso promemoria
         val allerta = collegato && Promemoria.inCorso(this)

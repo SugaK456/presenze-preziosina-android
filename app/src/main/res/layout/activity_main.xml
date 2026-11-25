@@ -97,6 +97,22 @@
                         android:layout_width="190dp"
                         android:layout_height="190dp"
                         android:src="@drawable/tessera_neutra" />
+
+                    <!-- numero della stanza stampato sulla tessera -->
+                    <TextView
+                        android:id="@+id/t_stanza"
+                        android:layout_width="86dp"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="78dp"
+                        android:layout_marginTop="85dp"
+                        android:autoSizeMaxTextSize="27sp"
+                        android:autoSizeMinTextSize="10sp"
+                        android:autoSizeTextType="uniform"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:text="–"
+                        android:textColor="#1E1B3A" />
                 </FrameLayout>
 
                 <TextView

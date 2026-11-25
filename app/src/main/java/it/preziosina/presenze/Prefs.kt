@@ -13,6 +13,7 @@ object Prefs {
     fun codice(c: Context): String? = sp(c).getString("codice", null)
     fun progetto(c: Context): String? = sp(c).getString("progetto", null)
     fun chiave(c: Context): String? = sp(c).getString("chiave", null)
+    fun stanza(c: Context): String? = sp(c).getString("stanza", null)
     fun collegato(c: Context): Boolean = codice(c) != null && progetto(c) != null
 
     fun salvaCollegamento(c: Context, l: Collegamento) {
@@ -20,6 +21,7 @@ object Prefs {
             .putString("codice", l.codice)
             .putString("progetto", l.progetto)
             .putString("chiave", l.chiave)
+            .putString("stanza", l.stanza)
             .remove("stato").remove("esito").remove("ora")
             .apply()
     }
@@ -40,13 +42,14 @@ object Prefs {
     fun ora(c: Context): Long = sp(c).getLong("ora", 0L)
 }
 
-data class Collegamento(val codice: String, val progetto: String, val chiave: String?) {
+data class Collegamento(val codice: String, val progetto: String, val chiave: String?, val stanza: String?) {
     companion object {
         private val CODICE_OK = Regex("^[A-Za-z0-9]{20,64}$")
         private val PROGETTO_OK = Regex("^[a-z0-9-]{4,40}$")
         private val CHIAVE_OK = Regex("^[A-Za-z0-9_-]{10,80}$")
+        private val STANZA_OK = Regex("^[A-Za-z0-9 ./-]{1,8}$")
 
-        /** Accetta il link preziosina://collega?c=...&p=...&k=... (anche incollato con spazi attorno). */
+        /** Accetta il link preziosina://collega?c=...&p=...&k=...&s=STANZA (anche incollato con spazi attorno). */
         fun daTesto(testo: String?): Collegamento? {
             if (testo.isNullOrBlank()) return null
             val inizio = testo.indexOf("preziosina://")
@@ -62,7 +65,8 @@ data class Collegamento(val codice: String, val progetto: String, val chiave: St
             val k = u.getQueryParameter("k")
             if (!CODICE_OK.matches(c) || !PROGETTO_OK.matches(p)) return null
             if (k != null && !CHIAVE_OK.matches(k)) return null
-            return Collegamento(c, p, k)
+            val st = u.getQueryParameter("s")?.trim()?.takeIf { STANZA_OK.matches(it) }
+            return Collegamento(c, p, k, st)
         }
     }
 }

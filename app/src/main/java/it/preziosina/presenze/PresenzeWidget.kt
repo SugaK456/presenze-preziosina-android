@@ -94,6 +94,9 @@ class PresenzeWidget : AppWidgetProvider() {
             }
         }
 
+        /** Numero della stanza da stampare sulla tessera ("–" se l'app è stata collegata con un link vecchio) */
+        fun stanzaTesto(c: Context): String = Prefs.stanza(c)?.takeIf { it.isNotBlank() } ?: "–"
+
         /** Tessera-mascotte: verde DENTRO, rossa FUORI, gialla nell'ora del promemoria, grigia se non collegata */
         fun immagine(c: Context): Int = when {
             !Prefs.collegato(c) -> R.drawable.tessera_neutra
@@ -110,6 +113,7 @@ class PresenzeWidget : AppWidgetProvider() {
             val f = fumetto(c)
 
             v.setImageViewResource(R.id.w_omina, immagine(c))
+            v.setTextViewText(R.id.w_stanza, stanzaTesto(c))
             v.setInt(R.id.w_fumetto, "setBackgroundResource", if (f.allerta) R.drawable.fumetto_allerta else R.drawable.fumetto)
             v.setTextViewText(R.id.w_titolo, f.titolo)
             v.setTextViewText(R.id.w_sotto, f.sotto)
