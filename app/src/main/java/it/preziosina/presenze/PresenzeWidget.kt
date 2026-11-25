@@ -11,12 +11,13 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-/** Widget sulla Home: due pulsanti ESCO / RIENTRO + riga di stato. */
+/** Widget: l'omina appesa + fumetto + pulsanti ESCO / RIENTRO. */
 class PresenzeWidget : AppWidgetProvider() {
 
     override fun onUpdate(c: Context, m: AppWidgetManager, ids: IntArray) {
         val v = vista(c)
         ids.forEach { m.updateAppWidget(it, v) }
+        Promemoria.programma(c)
     }
 
     override fun onReceive(c: Context, intent: Intent) {
@@ -32,6 +33,9 @@ class PresenzeWidget : AppWidgetProvider() {
             try { Azioni.inviaOraOInCoda(c, stato) } finally { pr.finish() }
         }.start()
     }
+
+    /** Testi del fumetto: titolo + riga sotto */
+    data class Fumetto(val titolo: String, val sotto: String, val allerta: Boolean)
 
     companion object {
         const val AZ_ESCO = "it.preziosina.presenze.ESCO"
@@ -55,16 +59,38 @@ class PresenzeWidget : AppWidgetProvider() {
             return PendingIntent.getActivity(c, 3, i, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }
 
+        fun nomeStato(stato: String?) = if (stato == "fuori") "FUORI" else "DENTRO"
+
+        fun oraUltimo(c: Context): String = SimpleDateFormat("HH:mm", Locale.ITALY).format(Date(Prefs.ora(c)))
+
+        /** Riga di stato (usata anche nell'app) */
         fun testoStato(c: Context): String {
-            if (!Prefs.collegato(c)) return "Tocca per collegare l'app"
-            val stato = Prefs.stato(c) ?: return "Tocca ESCO quando esci, RIENTRO quando torni"
-            val nome = if (stato == "fuori") "FUORI" else "DENTRO"
-            val ora = SimpleDateFormat("HH:mm", Locale.ITALY).format(Date(Prefs.ora(c)))
+            if (!Prefs.collegato(c)) return "App non collegata"
+            val stato = Prefs.stato(c) ?: return "Tocca Esco quando esci, Rientro quando torni"
             return when (Prefs.esito(c)) {
                 "invio" -> "Invio in corso…"
-                "coda" -> "$nome · senza rete, lo invio appena torna"
-                "codice" -> "Codice non valido: apri l'app"
-                else -> "Sei $nome · registrato alle $ora"
+                "coda" -> "${nomeStato(stato)} · senza rete, lo invio appena torna"
+                "codice" -> "Codice non valido: ricollega l'app"
+                else -> "registrato alle ${oraUltimo(c)}"
+            }
+        }
+
+        fun fumetto(c: Context): Fumetto {
+            if (!Prefs.collegato(c)) return Fumetto("Ciao! Collegami all'app 💕", "Tocca qui per aprirla", false)
+            val stato = Prefs.stato(c)
+            if (Promemoria.inCorso(c)) {
+                val ora = if (stato == null) "Segna se sei dentro o fuori" else "Ora risulti ${nomeStato(stato)}"
+                return Fumetto("Controlla che il tuo status sia veritiero!", ora, true)
+            }
+            if (stato == null) return Fumetto("Ciao! Dove sei adesso?", "Tocca Esco o Rientro", false)
+            return when (Prefs.esito(c)) {
+                "invio" -> Fumetto("Un attimo…", "Sto inviando ${nomeStato(stato)}", false)
+                "coda" -> Fumetto("Niente rete 📶", "Invio ${nomeStato(stato)} appena torna", false)
+                "codice" -> Fumetto("Ops, codice non valido", "Apri l'app e ricollegala", true)
+                else -> if (stato == "fuori")
+                    Fumetto("Sei FUORI 🚪 A dopo!", "dalle ${oraUltimo(c)}", false)
+                else
+                    Fumetto("Sei DENTRO 🏠 Al calduccio!", "dalle ${oraUltimo(c)}", false)
             }
         }
 
@@ -72,10 +98,17 @@ class PresenzeWidget : AppWidgetProvider() {
             val v = RemoteViews(c.packageName, R.layout.widget_presenze)
             val collegato = Prefs.collegato(c)
             val stato = Prefs.stato(c)
-            // il pulsante dell'ultimo stato è "acceso", l'altro più tenue
+            val f = fumetto(c)
+
+            v.setImageViewResource(R.id.w_omina, if (f.allerta) R.drawable.omina_attenta else R.drawable.omina_felice)
+            v.setInt(R.id.w_fumetto, "setBackgroundResource", if (f.allerta) R.drawable.fumetto_allerta else R.drawable.fumetto)
+            v.setTextViewText(R.id.w_titolo, f.titolo)
+            v.setTextViewText(R.id.w_sotto, f.sotto)
+
+            // il pulsante dello stato attuale è "acceso", l'altro più tenue
             v.setInt(R.id.w_esco, "setBackgroundResource", if (stato == "fuori") R.drawable.btn_esco_on else R.drawable.btn_esco_off)
             v.setInt(R.id.w_rientro, "setBackgroundResource", if (stato == "dentro") R.drawable.btn_rientro_on else R.drawable.btn_rientro_off)
-            v.setTextViewText(R.id.w_stato, testoStato(c))
+
             if (collegato) {
                 v.setOnClickPendingIntent(R.id.w_esco, azione(c, AZ_ESCO, 1))
                 v.setOnClickPendingIntent(R.id.w_rientro, azione(c, AZ_RIENTRO, 2))
@@ -83,7 +116,8 @@ class PresenzeWidget : AppWidgetProvider() {
                 v.setOnClickPendingIntent(R.id.w_esco, apriApp(c))
                 v.setOnClickPendingIntent(R.id.w_rientro, apriApp(c))
             }
-            v.setOnClickPendingIntent(R.id.w_stato, apriApp(c))
+            v.setOnClickPendingIntent(R.id.w_fumetto, apriApp(c))
+            v.setOnClickPendingIntent(R.id.w_omina, apriApp(c))
             return v
         }
     }

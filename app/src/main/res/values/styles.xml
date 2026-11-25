@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Tema" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/sfondo</item>
+        <item name="android:colorAccent">@color/rosa</item>
+        <item name="android:colorPrimary">@color/scuro</item>
+    </style>
+
+    <style name="Bottone">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">52dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="Bottone.Scuro">
+        <item name="android:background">@drawable/btn_scuro</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+    <style name="Bottone.Chiaro">
+        <item name="android:background">@drawable/btn_chiaro</item>
+        <item name="android:textColor">@color/scuro</item>
+    </style>
+</resources>

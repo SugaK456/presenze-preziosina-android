@@ -2,6 +2,8 @@
 <resources>
     <string name="app_name">Presenze</string>
     <string name="widget_nome">Presenze Preziosina</string>
-    <string name="widget_desc">Pulsanti ESCO e RIENTRO per la residenza</string>
+    <string name="widget_desc">L\'omina con i pulsanti ESCO e RIENTRO</string>
     <string name="url_web">https://presenze-preziosina.web.app/</string>
+    <string name="canale_nome">Promemoria presenze</string>
+    <string name="canale_desc">Ti chiede se sei ancora dentro o fuori agli orari stabiliti</string>
 </resources>
